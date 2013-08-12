@@ -1,5 +1,6 @@
 package org.robolectric.shadows;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Dialog;
 import android.appwidget.AppWidgetProvider;
@@ -20,11 +21,7 @@ import android.widget.FrameLayout;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.robolectric.AndroidManifest;
-import org.robolectric.DefaultTestLifecycle;
-import org.robolectric.R;
-import org.robolectric.Robolectric;
-import org.robolectric.TestRunners;
+import org.robolectric.*;
 import org.robolectric.res.Fs;
 import org.robolectric.shadows.testing.OnMethodTestActivity;
 import org.robolectric.test.TemporaryFolder;
@@ -740,6 +737,14 @@ public class ActivityTest {
     Activity activity = new Activity();
     activity.overridePendingTransition(15, 2);
     assertThat(shadowOf(activity).getPendingTransitionExitAnimationResourceId()).isEqualTo(2);
+  }
+
+  @Test
+  public void getActionBar_returnsMemoizedActionBar() throws Exception {
+    Activity activity = new Activity();
+    ActionBar actionBar = activity.getActionBar();
+    assertThat(actionBar).isInstanceOfAny(ActionBar.class);
+    assertThat(activity.getActionBar()).isEqualTo(actionBar);
   }
 
   /////////////////////////////

@@ -1,6 +1,7 @@
 package org.robolectric.shadows;
 
 import android.R;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Application;
 import android.app.Dialog;
@@ -13,21 +14,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
-import android.view.KeyEvent;
-import android.view.LayoutInflater;
-import android.view.MenuInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import android.view.*;
 import org.robolectric.AndroidManifest;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Implementation;
@@ -37,6 +24,11 @@ import org.robolectric.bytecode.RobolectricInternals;
 import org.robolectric.res.ResName;
 import org.robolectric.tester.android.view.RoboWindow;
 import org.robolectric.tester.android.view.RoboWindowManager;
+import org.robolectric.tester.android.view.TestActionBar;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.*;
 
 import static org.fest.reflect.core.Reflection.field;
 import static org.robolectric.Robolectric.directlyOn;
@@ -73,7 +65,8 @@ public class ShadowActivity extends ShadowContextThemeWrapper {
   private boolean destroyed = false;
   private int streamType = -1;
   private boolean mIsTaskRoot = true;
-  
+  private ActionBar actionBar;
+
   public void __constructor__() {
     RobolectricInternals.getConstructor(Activity.class, realActivity, new Class[0]).invoke();
 
@@ -366,6 +359,14 @@ public class ShadowActivity extends ShadowContextThemeWrapper {
 
   public void setWindow(Window window) {
     field("mWindow").ofType(Window.class).in(realActivity).set(window);
+  }
+
+  @Implementation
+  public ActionBar getActionBar() {
+    if (actionBar == null) {
+      actionBar = new TestActionBar();
+    }
+    return actionBar;
   }
 
   @Implementation
