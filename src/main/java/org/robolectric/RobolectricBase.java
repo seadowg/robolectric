@@ -249,6 +249,8 @@ import org.robolectric.shadows.ShadowWifiConfiguration;
 import org.robolectric.shadows.ShadowWifiInfo;
 import org.robolectric.shadows.ShadowWifiManager;
 import org.robolectric.shadows.ShadowWindow;
+import org.robolectric.shadows.ShadowWindowManager;
+import org.robolectric.shadows.ShadowWindowManagerImpl;
 import org.robolectric.shadows.ShadowZoomButtonsController;
 
 import java.util.Arrays;
@@ -525,6 +527,8 @@ public class RobolectricBase {
       ShadowWifiManager.class,
       ShadowWifiManager.ShadowWifiLock.class,
       ShadowWindow.class,
-      ShadowZoomButtonsController.class
+      ShadowZoomButtonsController.class,
+      ShadowWindowManager.class,
+      ShadowWindowManagerImpl.class
   ));
 }
