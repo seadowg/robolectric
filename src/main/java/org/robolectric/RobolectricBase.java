@@ -433,6 +433,7 @@ public class RobolectricBase {
       ShadowPath.class,
       ShadowPendingIntent.class,
       ShadowPeriodicSync.class,
+      ShadowPhoneWindow.class,
       ShadowPopupWindow.class,
       ShadowPorterDuffXfermode.class,
       ShadowPowerManager.class,
@@ -528,9 +529,8 @@ public class RobolectricBase {
       ShadowWifiManager.class,
       ShadowWifiManager.ShadowWifiLock.class,
       ShadowWindow.class,
-      ShadowZoomButtonsController.class,
       ShadowWindowManager.class,
       ShadowWindowManagerImpl.class,
-      ShadowPhoneWindow.class
+      ShadowZoomButtonsController.class
   ));
 }
