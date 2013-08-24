@@ -122,8 +122,6 @@ public class ActivityController<T extends Activity> {
 
         activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         method("performCreate").withParameterTypes(Bundle.class).in(activity).invoke(bundle);
-        field("mDecor").ofType(View.class).in(activity).set(activity.getWindow().getDecorView());
-        method("makeVisible").in(activity).invoke();
       }
     });
     return this;
@@ -182,6 +180,18 @@ public class ActivityController<T extends Activity> {
 
   public ActivityController<T> saveInstanceState(android.os.Bundle outState) {
     method("performSaveInstanceState").withParameterTypes(Bundle.class).in(activity).invoke(outState);
+    return this;
+  }
+
+  public ActivityController<T> visible() {
+    shadowMainLooper.runPaused(new Runnable() {
+      @Override
+      public void run() {
+        field("mDecor").ofType(View.class).in(activity).set(activity.getWindow().getDecorView());
+        method("makeVisible").in(activity).invoke();
+      }
+    });
+
     return this;
   }
 
