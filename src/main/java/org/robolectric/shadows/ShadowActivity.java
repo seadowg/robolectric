@@ -20,6 +20,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import org.robolectric.AndroidManifest;
+import org.robolectric.Robolectric;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
+import org.robolectric.annotation.RealObject;
+import org.robolectric.bytecode.RobolectricInternals;
+import org.robolectric.res.ResName;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -28,15 +36,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.robolectric.AndroidManifest;
-import org.robolectric.Robolectric;
-import org.robolectric.annotation.Implementation;
-import org.robolectric.annotation.Implements;
-import org.robolectric.annotation.RealObject;
-import org.robolectric.bytecode.RobolectricInternals;
-import org.robolectric.res.ResName;
-import org.robolectric.tester.android.view.RoboWindow;
-import org.robolectric.tester.android.view.RoboWindowManager;
 
 import static org.fest.reflect.core.Reflection.field;
 import static org.robolectric.Robolectric.directlyOn;
@@ -84,7 +83,6 @@ public class ShadowActivity extends ShadowContextThemeWrapper {
       }
 
       setApplication(Robolectric.application);
-      setWindowManager(new RoboWindowManager());
       callAttachBaseContext(Robolectric.application);
       if (!setThemeFromManifest()) {
         // todo: should we set a default theme?
@@ -350,17 +348,24 @@ public class ShadowActivity extends ShadowContextThemeWrapper {
   }
 
   /**
-   * Constructs a new Window (a {@link org.robolectric.tester.android.view.RoboWindow}) if no window has previously been
+   * Constructs a new Window (a {@link com.android.internal.policy.impl.PhoneWindow}) if no window has previously been
    * set.
    *
    * @return the window associated with this Activity
    */
   @Implementation
-  public Window getWindow() {
+  public Window getWindow()  {
     Window window = directlyOn(realActivity, Activity.class).getWindow();
+
     if (window == null) {
-      setWindow(window = new RoboWindow(realActivity));
+      try {
+        window = ShadowWindow.create(realActivity);
+        setWindow(window);
+      } catch (Exception e) {
+        throw new RuntimeException("Window creation failed!", e);
+      }
     }
+
     return window;
   }
 

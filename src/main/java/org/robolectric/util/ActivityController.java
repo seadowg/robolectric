@@ -10,6 +10,8 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Looper;
+import android.view.View;
+import android.view.Window;
 import org.robolectric.RoboInstrumentation;
 import org.robolectric.Robolectric;
 import org.robolectric.bytecode.RobolectricInternals;
@@ -17,7 +19,10 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowActivityThread;
 import org.robolectric.shadows.ShadowLooper;
 
-import static org.fest.reflect.core.Reflection.*;
+import static org.fest.reflect.core.Reflection.constructor;
+import static org.fest.reflect.core.Reflection.field;
+import static org.fest.reflect.core.Reflection.method;
+import static org.fest.reflect.core.Reflection.type;
 import static org.robolectric.Robolectric.shadowOf_;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -106,7 +111,6 @@ public class ActivityController<T extends Activity> {
     shadowActivity.setThemeFromManifest();
 
     attached = true;
-
     return this;
   }
 
@@ -116,6 +120,7 @@ public class ActivityController<T extends Activity> {
       public void run() {
         if (!attached) attach();
 
+        activity.getWindow().requestFeature(Window.FEATURE_ACTION_BAR);
         method("performCreate").withParameterTypes(Bundle.class).in(activity).invoke(bundle);
       }
     });
@@ -175,6 +180,18 @@ public class ActivityController<T extends Activity> {
 
   public ActivityController<T> saveInstanceState(android.os.Bundle outState) {
     method("performSaveInstanceState").withParameterTypes(Bundle.class).in(activity).invoke(outState);
+    return this;
+  }
+
+  public ActivityController<T> visible() {
+    shadowMainLooper.runPaused(new Runnable() {
+      @Override
+      public void run() {
+        field("mDecor").ofType(View.class).in(activity).set(activity.getWindow().getDecorView());
+        method("makeVisible").in(activity).invoke();
+      }
+    });
+
     return this;
   }
 
